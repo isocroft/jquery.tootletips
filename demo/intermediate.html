@@ -15,10 +15,10 @@
                <div id="aside-pane" class="unselectable">
 				 <div id="aside" class="btn-group-y-vertical pill block-box">
                       <button style="width:100%;" data-subject="tour" class="btn btn-block btn-ordinary top-half-pill first relative" title="<b><span style='color:red;'>N</span>otifs</b>">Notifications <span class="badge pull-right">4</span></button>
-                      <button style="width:100%;" class="btn btn-block btn-ordinary relative" title="<img src='./assets/img/mail.gif' /><b><span style='color:green;font-size:40px;'>I</span>nbox</b>">Messages <span class="badge pull-right">1</span></button>
-				      <button style="width:100%;" class="btn btn-block btn-ordinary relative">Schedule <span class="badge pull-right">2</span></button>
-				      <button style="width:100%;" class="btn btn-block btn-ordinary relative">Adminstration</button>
-                      <button style="width:100%;" class="btn btn-block btn-ordinary bottom-half-pill relative">Preferences</button>
+                      <button style="width:100%;" class="btn btn-block btn-ordinary relative" title="<img src='./assets/img/mail.gif' valign='0' halign='0' style='top:-3px;position:relative;margin-right:5px;' /><b><span style='color:green;font-size:20px;'>I</span>nbox</b>">Messages <span class="badge pull-right">1</span></button>
+				      <button style="width:100%;" class="btn btn-block btn-ordinary relative" title="<em><ins>T</ins></em>odos">Schedule <span class="badge pull-right">2</span></button>
+				      <button style="width:100%;" class="btn btn-block btn-ordinary relative" title="admins">Adminstration</button>
+                      <button style="width:100%;" class="btn btn-block btn-ordinary bottom-half-pill relative" title="Favs">Preferences</button>
                  </div>
 				 
 				 <div class="panel panel-default" style="margin-top:12px;">
@@ -39,7 +39,7 @@
                        <h2>Tip of the day!</h2>
                        <p>
                           I really don't know what the tip of the day would be. 
-                          I guess you'll just have to figure that out yourself.
+                          I guess you'll just have to figure that out yourself. NOTICE THE TEXT COLOR OF THE TOOLTIP CHANGING...
                        </p>
                    </div>        
             </div>
@@ -50,21 +50,20 @@
         <script src="./assets/js/jquery.migrate.min.js" type="text/javascript"></script>
         <script src="./assets/js/jquery.easing.min.js" type="text/javascript"></script>
         <script src="../src/tootletips.js" type="text/javascript"></script>
-        <script type="text/javascript" />
+        <script type="text/javascript">
              $(function(){
 
                   $('[title]').tootletip({
                       showTip:true,
-                      resetPosition:true,
                       preferedPosition:{
                           ".btn-ordinary":"right"
                       },
                       tipEvents:{
                          onFinishIn:function(tip, elem){
-                             tip.css({backgroundColor:'#f1f1f1'});
+                             tip.css({color:'blue'});
                          },
                          onFinishOut:function(tip, elem){
-                             tip.css({backgroundColor:'#222222'});
+                             tip.css({color:'white'});
                          }
                       }
                   });                 
