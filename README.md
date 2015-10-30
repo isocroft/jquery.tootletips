@@ -8,7 +8,7 @@ uses CSS3 transitions and falls back to in-built jQuery animation for non-suppor
 ### Details
 - Release Version: 0.1
 - Browser Support: IE6-11, FF3.6-36, CRM3-32, SAF3-5, Opera7-*
-- Known Issues: Not that i know of
+- Known Issues: None that i know of
 - Change Log: ehhm... this is the first version so no change logs yet
 
 ### How to use
