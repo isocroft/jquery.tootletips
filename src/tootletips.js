@@ -47,7 +47,7 @@
 		       // last element child of the root 
 		       $body = $('body'),
 			   // factor this in... just in case the <body>s' basic top rect basis has been messed with !?
-			   $top =  ($body[0].runtimeStyle && parseInt(($body[0].runtimeStyle.getAttribute("marginTop")))  || parseInt($body.css("marginTop"))),  /* stop IE again, 4rm brewing up a storm */
+			   $top = (/*@cc_on!@*/false && $body[0].runtimeStyle && parseInt(($body[0].runtimeStyle.getAttribute("marginTop")))  || (!window.opera && parseInt($body.css("marginTop"))) || 0),  /* stop IE again, 4rm brewing up a storm */
 			   $el,
 			   // get the real dimension of an element
 			   effectiveDimesion = function($obj, part){
@@ -145,8 +145,8 @@
 						 }
 					};
  
-                    if(options.showTip){
-					      tp.find("i").eq(0).addClass(tipClasses[tpos]);
+                    if(options.showTip && !tp.contents(tipClasses[tpos]).length){
+					      tp.find("i").eq(0).attr("class", "arrow-tip").addClass(tipClasses[tpos]);
 				    }
 					
                     return offsetPositions[tpos];					
@@ -159,7 +159,6 @@
 		       				
 					    var optimalPosition = getPreferedPosition(el, options.preferedPosition), 
 						    elPosition = el.offset(), 
-					        tlPosition = tp.position(), 
 					        elDimension = {
 					           width:el.outerWidth(),
 					           height:el.outerHeight()
@@ -169,10 +168,10 @@
 					           height:effectiveDimesion(tp, "height")
 					        },
 						    positionsToCheck = {
-						         left:((Math.abs(elPosition.left) - outerWidth) + Math.abs(tlPosition.left)) > outerWidth,
-						         top:(((Math.abs(elPosition.top) - outerHeight) + Math.abs(tlPosition.top)) > outerHeight || ((elPosition.left - outerWidth) + tlPosition.left) > outerWidth),
-								 right:((elPosition.left + elDimension.width) + (Math.abs(tlPosition.left) + tlDimension.width)) > outerWidth,
-								 bottom:(((elPosition.top + elDimension.height) + (Math.abs(tlPosition.top) + tlDimension.height)) > outerHeight || ((elPosition.left - outerWidth) + tlPosition.left) > outerWidth)
+						         left:((outerWidth - (elPosition.left - tlDimension.width - paddingValue)) <= outerWidth && $win.scrollLeft() <= (elPosition.left - tlDimension.width - paddingValue)),
+						         top:((outerHeight - ((elPosition.top - elDimension.height - paddingValue - 5) + $top) <= outerHeight && $win.scrollTop() <= ((elPosition.top - elDimension.height - paddingValue - 5) + $top))),
+								 right:((elPosition.left + elDimension.width + paddingValue + tlDimension.width) <= outerWidth || $win.scrollLeft() <= (elPosition.left + elDimension.width + paddingValue + tlDimension.width)),
+								 bottom:((((elPosition.top + elDimension.height + paddingValue) - $top) + tlDimension.height) <= outerHeight || $win.scrollTop() <= (((elPosition.top + elDimension.height + paddingValue) - $top) + tlDimension.height))
 						    };
 			               
 						   if(typeof optimalPosition == "string"){
@@ -184,7 +183,7 @@
 						   }
 						   
 						   $.each(positionsToCheck, function(key, val, obj){
-						         if(!optimalPosition && val){
+						         if(!optimalPosition && !!val){
 								     optimalPosition = key;
 								 }
 						   });
@@ -192,14 +191,18 @@
 						   return optimalPosition;
 			   };
 			   
-		       options = $.extend(defaults, options);
+		       options = $.extend(defaults, options, true);
 			   
-			   if($.inArray(mouseEnterKey, options.eventsTriggerIn.split(_spc)) < 0){
-			         options.eventsTriggerIn += String(_spc+mouseEnterKey);
+			   if((/^([\s]*)$/).test(options.eventsTriggerIn)){ 
+			       if($.inArray(mouseEnterKey, options.eventsTriggerIn.split(_spc)) < 0){
+			             options.eventsTriggerIn += String(_spc+mouseEnterKey);
+			       }
 			   }
 			   
-			   if($.inArray(mouseLeaveKey, options.eventsTriggerOut.split(_spc)) < 0){
-			         options.eventsTriggerOut += String(_spc+mouseLeaveKey);
+			   if((/^([\s]*)$/).test(options.eventsTriggerOut)){
+			       if($.inArray(mouseLeaveKey, options.eventsTriggerOut.split(_spc)) < 0){
+			             options.eventsTriggerOut += String(_spc+mouseLeaveKey);
+			       }
 			   }
 			   
 		  return this.each(function(idx, el){
@@ -209,7 +212,7 @@
 			   // determine useable attribute (works with the 'attributes' option)
 			       $attrib = $.grep(options.attributes, function(v){ return (!!$el.attr(v)); })[0] || "";
 				// Make DIV and append to page   
-			       $tooltip = $('<div class="tooltip" data-tooltip="' + idx + '">' + $el.attr($attrib) + '<i class="arrow-tip"></i></div>').appendTo("body");
+			       $tooltip = $('<div class="tooltip tip-hidden" data-tooltip="' + idx + '">' + $el.attr($attrib) + '<i class="arrow-tip"></i></div>').appendTo("body");
 			   
 			   // Position right away, so first apperance is smooth
 			    $tooltip.css(			
@@ -222,21 +225,25 @@
 				.removeAttr($attrib)
 				// Mouseenter
 				.on(options.eventsTriggerIn, function(e){
-				
+				    
 				    var tm,
 					    $pos,
 					    $el = $(this);
 					    $tooltip = $('div[data-tooltip=' + $el.data('tooltip-target') + ']');
 						
-					   //listen for CSS3 transition events
+						if($tooltip.is(".tip-shown")){
+						      return false;
+						}
+						
+						
+					   //listen for CSS3 transition events (cross-browser)
                        $tooltip.on("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", function(ev){
-					        console.log(e.type+": transitionEnd Event!");
-					        var $this = $(this);
-					        options.tipEvents.onFinishIn($this, $el);
-							$this.off(ev);
+					        $(ev.target).removeClass("tip-hidden").addClass("tip-shown");
+					        options.tipEvents.onFinishIn($(ev.target), $el);
+							$(ev.target).off(ev);
 					   });					   
 					
-					   // reposition tooltip, in case of page offset movements relative to view e.g. viewport/window resize, scrolling, e.t.c
+					   // reposition tooltip, in case of page offset movements e.g window resizes, scrolling, element animations e.t.c
 					   if(options.resetPosition){
 					       $pos = getOptimalPosition($el, $tooltip);
 					   }else{
@@ -244,7 +251,7 @@
 					   }   
 			  
                       $tooltip.css(			
-				          getPositionCoords($el, $tooltip, $pos)
+				          getPositionCoords($el, $tooltip, $pos) 
 				      );
 			
 					
@@ -260,7 +267,11 @@
 							   opacity:1,
 							   margin:'5px'
 							  }, 
-							  true, options.tipEvents.onFinishIn);
+							  true, 
+							  function(){
+							     $tooltip.removeClass("tip-hidden").addClass("tip-shown");
+							     options.tipEvents.onFinishIn($tooltip, $el);
+							  });
 						}
 						clearTimeout(tm);
 					 }, 100);   
@@ -272,12 +283,15 @@
 				        $el = $(this),
 					    $tooltip = $('div[data-tooltip=' + $el.data('tooltip-target') + ']');
 						
-						//listen for CSS3 transition events
+						if($tooltip.is(".tip-hidden")){
+						      return false;
+						}
+						
+						//listen for CSS3 transition events (cross-browser)
                        $tooltip.on("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", function(ev){
-					        //console.log(e.type+": transitionEnd Event!");
-							var $this = $(this);
-					        options.tipEvents.onFinishOut($this, $el);
-							$this.off(ev);
+					        $(ev.target).removeClass("tip-shown").addClass("tip-hidden");
+					        options.tipEvents.onFinishOut($(ev.target), $el);
+							$(ev.target).off(ev);
 					   });
 					
 					     // Temporary class for same-direction fadeout
@@ -291,7 +305,10 @@
 							     marginTop:'-20px'
 					           },
                                false,
-                               options.tipEvents.onFinishOut);
+                               function(){
+							       $(ev.target).removeClass("tip-shown").addClass("tip-hidden");
+							       options.tipEvents.onFinishOut($tooltip, $el);
+							   });
 					    }
 					
 				        // Remove all classes
