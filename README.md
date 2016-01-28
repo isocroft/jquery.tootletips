@@ -16,7 +16,8 @@ uses CSS3 transitions and falls back to in-built jQuery animation for non-suppor
 Install the jquery script into your page using the script tag or script loaders like
 (curl.js, require.js, script.js) and then include the tootletips plugin script into the page. 
     
-	`<head>
+```	
+<head>
 	    <!-- asumming a production environment here -->
         ...
         
@@ -25,14 +26,14 @@ Install the jquery script into your page using the script tag or script loaders 
             <script type="text/javascript" src="/path/to/plugin/tootletips.min.js"></script>
       
         ...
-    </head>`
+</head>
+```
 
 To activate the script, include the following code within the page ready event callback 
 for jQuery
 
-    `
-	<script>
-	
+```
+<script>
 	    $(document).ready(function(){
             $("[title]").tootletip({
 		         showTip:true,
@@ -41,21 +42,22 @@ for jQuery
 	        })
         });
 	
-	</script>` 
+	</script>
+```
  
 ### Option Settings for Tootletips
  
  There are a couple of option settings which you can pass to <tt>TootleTips</tt> while 
  activating it and they are as listed below
  
- - <em>showTip<em> (Type: Boolean | DefaultValue: `false`)
- - <em>resetPosition (Type: Boolean | DefaultValue: `false`)
- - <em>eventsTriggerIn</em> (Type: String | DefaultValue: `""`)
- - <em>eventsTriggerOut</em> (Type: String | DefaultValue: `""`)
- - <em>preferedPosition</em> (Type: Mixed | DefaultValue: `"bottom"`)
- - <em>attributes</em> (Type: Array | DefaultValue: `["title"]`)
- - <em>tipEvents</em> (Type: Object | DefaultValue: `{onFinishIn:function(){}, onFinishOut:function(){}}`)
- - <em>delay</em> (Type: Number | DefaultValue: `0`)
+ - <em>showTip<em> (Type: **Boolean** | DefaultValue: `false`)
+ - <em>resetPosition (Type: **Boolean** | DefaultValue: `false`)
+ - <em>eventsTriggerIn</em> (Type: **String** | DefaultValue: `""`)
+ - <em>eventsTriggerOut</em> (Type: **String** | DefaultValue: `""`)
+ - <em>preferedPosition</em> (Type: **Mixed** | DefaultValue: `"bottom"`)
+ - <em>attributes</em> (Type: **Array** | DefaultValue: `["title"]`)
+ - <em>tipEvents</em> (Type: **Object** | DefaultValue: `{onFinishIn:function(){}, onFinishOut:function(){}}`)
+ - <em>delay</em> (Type: **Number** | DefaultValue: `0`)
  
 #### | showTip
 
